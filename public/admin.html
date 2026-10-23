@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Painel da loja · Sistema Food</title>
+  <meta name="theme-color" content="#0f0d0b" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>" />
+  <link rel="stylesheet" href="/css/app.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+</head>
+<body class="admin-body">
+
+  <!-- LOGIN -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-bg"></div>
+    <div class="login-wrap">
+      <div class="login-brand">
+        <span class="brand-mark" style="width:52px;height:52px;font-size:26px">🍔</span>
+        <div>
+          <h1 id="loginStoreName">Brasa Burger</h1>
+          <p class="muted small">Painel de gestão · pedidos, caixa e cozinha</p>
+        </div>
+      </div>
+
+      <form class="login-card" id="loginForm">
+        <h2>Entrar no painel</h2>
+        <p class="muted small">Use seu e-mail e senha de acesso.</p>
+        <div class="field mt-2">
+          <label for="loginEmail">E-mail</label>
+          <input class="input" id="loginEmail" type="email" autocomplete="username" required placeholder="voce@sualoja.com" />
+        </div>
+        <div class="field mt-2">
+          <label for="loginPassword">Senha</label>
+          <input class="input" id="loginPassword" type="password" autocomplete="current-password" required placeholder="••••••••" />
+        </div>
+        <p class="form-error mt-1" id="loginError"></p>
+        <button class="btn btn-primary btn-lg btn-block mt-2" type="submit" id="loginBtn">Entrar</button>
+
+        <div class="login-demo">
+          <span class="tiny muted">Contas de demonstração (senha ao lado)</span>
+          <div class="demo-grid">
+            <button type="button" class="demo-chip" data-email="admin@sistema.food" data-pass="admin123">
+              <strong>Admin</strong><small>admin123</small>
+            </button>
+            <button type="button" class="demo-chip" data-email="caixa@sistema.food" data-pass="caixa123">
+              <strong>Caixa</strong><small>caixa123</small>
+            </button>
+            <button type="button" class="demo-chip" data-email="cozinha@sistema.food" data-pass="cozinha123">
+              <strong>Cozinha</strong><small>cozinha123</small>
+            </button>
+          </div>
+        </div>
+        <a href="/" class="login-back">← Voltar ao cardápio</a>
+      </form>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div class="shell hidden" id="appShell">
+    <div class="side-backdrop" id="sideBackdrop"></div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="side-brand">
+        <span class="brand-mark">🍔</span>
+        <div class="brand-text">
+          <strong id="sideStoreName">Brasa Burger</strong>
+          <small>painel da loja</small>
+        </div>
+      </div>
+
+      <nav class="side-nav" id="sideNav">
+        <a class="side-link" data-view="dashboard"><span>📊</span> Visão geral</a>
+        <a class="side-link" data-view="orders"><span>🧾</span> Pedidos <b class="nav-badge hidden" id="navOrdersBadge">0</b></a>
+        <a class="side-link" data-view="pos"><span>🛒</span> Novo pedido (PDV)</a>
+        <a class="side-link" data-view="tables"><span>🍽️</span> Mesas</a>
+        <a class="side-link" data-view="menu"><span>🍔</span> Cardápio</a>
+        <a class="side-link" data-view="coupons"><span>🎟️</span> Cupons</a>
+        <a class="side-link" data-view="reports"><span>📈</span> Relatórios</a>
+        <a class="side-link" data-view="team"><span>👥</span> Equipe</a>
+        <a class="side-link" data-view="settings"><span>⚙️</span> Configurações</a>
+      </nav>
+
+      <div class="side-foot">
+        <a class="side-mini" href="/cozinha" target="_blank">👨‍🍳 Tela da cozinha ↗</a>
+        <a class="side-mini" href="/" target="_blank">🍽️ Ver cardápio ↗</a>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <button class="btn btn-ghost btn-icon menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+        <div class="top-titles">
+          <h1 id="viewTitle">Visão geral</h1>
+          <p class="muted small" id="viewSub">Resumo do movimento de hoje</p>
+        </div>
+
+        <div class="top-actions">
+          <button class="store-pill" id="storeToggle" title="Abrir/fechar a loja para pedidos online">
+            <span class="dot" id="storeDot"></span>
+            <span id="storePillText">Aberto</span>
+          </button>
+          <div class="user-chip" id="userChip">
+            <span class="avatar" id="userAvatar">A</span>
+            <div class="user-info">
+              <strong id="userName">Administrador</strong>
+              <small id="userRole">admin</small>
+            </div>
+            <button class="btn btn-ghost btn-sm" id="logoutBtn" title="Sair">Sair</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="view" id="view"></main>
+    </div>
+  </div>
+
+  <script type="module" src="/js/admin.js"></script>
+</body>
+</html>

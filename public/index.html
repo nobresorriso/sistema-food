@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Brasa Burger & Pizza · Peça online</title>
+  <meta name="description" content="Hambúrgueres artesanais, pizzas e porções. Peça para entrega, retirada ou na mesa." />
+  <meta name="theme-color" content="#0f0d0b" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍔</text></svg>" />
+  <link rel="stylesheet" href="/css/app.css" />
+  <link rel="stylesheet" href="/css/store.css" />
+</head>
+<body>
+  <div class="announce" id="announce" hidden></div>
+
+  <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">🍔</span>
+        <span class="brand-text">
+          <strong id="brandName">Brasa Burger</strong>
+          <small id="brandTag">artesanal · desde 2019</small>
+        </span>
+      </a>
+
+      <nav class="main-nav">
+        <a href="#cardapio">Cardápio</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="/acompanhar">Meu pedido</a>
+      </nav>
+
+      <div class="header-actions">
+        <a class="btn btn-ghost btn-sm admin-link" href="/admin" title="Área da loja">Painel</a>
+        <button class="cart-btn" id="cartBtn" aria-label="Abrir carrinho">
+          <span class="cart-ico">🛒</span>
+          <span class="cart-count" id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="container hero-inner">
+        <div class="hero-copy">
+          <span class="hero-tag"><span class="live-dot" id="openDot"></span> <span id="openLabel">Aberto agora</span></span>
+          <h1>Comida de verdade,<br /><em>feita na brasa.</em></h1>
+          <p class="hero-sub" id="heroSub">
+            Hambúrgueres artesanais, pizzas de fermentação natural e porções generosas.
+            Peça online e receba em casa — ou reserve sua mesa.
+          </p>
+          <div class="hero-cta">
+            <a href="#cardapio" class="btn btn-primary btn-lg">Pedir agora <span class="ico">→</span></a>
+            <button class="btn btn-lg btn-ghost" id="tableCta">🍽️ Pedir na mesa</button>
+          </div>
+          <div class="hero-meta">
+            <div><strong id="metaTime">35 min</strong><span>Tempo médio</span></div>
+            <div><strong id="metaFee">R$ 5,00</strong><span>Entrega</span></div>
+            <div><strong id="metaFree">Acima de R$ 80</strong><span>Frete grátis</span></div>
+            <div><strong>PIX</strong><span>Pagamento</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BENEFÍCIOS -->
+    <section class="benefits">
+      <div class="container benefits-inner">
+        <div class="benefit"><span>🔥</span><div><strong>Feito na hora</strong><small>Nada de comida parada</small></div></div>
+        <div class="benefit"><span>🛵</span><div><strong>Entrega rápida</strong><small id="benefitDelivery">Grátis acima de R$ 80</small></div></div>
+        <div class="benefit"><span>💠</span><div><strong>PIX na hora</strong><small>Aprovação imediata</small></div></div>
+        <div class="benefit"><span>🕒</span><div><strong id="benefitHours">Ter–Dom · 18h às 23h30</strong><small>Horário de funcionamento</small></div></div>
+      </div>
+    </section>
+
+    <!-- CARDÁPIO -->
+    <section class="menu-section" id="cardapio">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">Cardápio</span>
+            <h2>Escolha o que vai hoje</h2>
+          </div>
+          <div class="search-box">
+            <span>🔎</span>
+            <input id="searchInput" class="input" type="search" placeholder="Buscar no cardápio..." autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="menu-toolbar">
+          <div class="tabs" id="categoryTabs"></div>
+          <span class="muted tiny" id="resultCount"></span>
+        </div>
+
+        <div id="menuBody">
+          <div class="menu-grid">
+            <div class="skeleton" style="height:220px"></div>
+            <div class="skeleton" style="height:220px"></div>
+            <div class="skeleton" style="height:220px"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMO FUNCIONA -->
+    <section class="how" id="como-funciona">
+      <div class="container">
+        <span class="eyebrow">Simples assim</span>
+        <h2>Três jeitos de pedir</h2>
+        <div class="how-grid">
+          <article class="how-card">
+            <div class="how-num">01</div>
+            <h3>🛵 Entrega</h3>
+            <p class="muted">Monte seu pedido, pague no PIX ou na entrega e acompanhe o status em tempo real.</p>
+            <a href="#cardapio" class="how-link">Pedir delivery →</a>
+          </article>
+          <article class="how-card">
+            <div class="how-num">02</div>
+            <h3>🥡 Retirada</h3>
+            <p class="muted">Peça pelo site e retire no balcão sem fila. Avisamos quando estiver pronto.</p>
+            <a href="#cardapio" class="how-link">Pedir retirada →</a>
+          </article>
+          <article class="how-card">
+            <div class="how-num">03</div>
+            <h3>🍽️ Na mesa</h3>
+            <p class="muted">Escaneie o QR code da mesa ou peça por aqui: escolha a mesa e envie direto para a cozinha.</p>
+            <button class="how-link linklike" id="tableCta2">Pedir na mesa →</button>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOCAL -->
+    <section class="visit">
+      <div class="container visit-inner">
+        <div>
+          <span class="eyebrow">Venha nos visitar</span>
+          <h2 id="visitName">Brasa Burger &amp; Pizza</h2>
+          <p class="muted mt-1" id="visitAddress"></p>
+          <div class="visit-info">
+            <div><span>🕒</span><div><strong>Funcionamento</strong><small id="visitHours"></small></div></div>
+            <div><span>📞</span><div><strong>Telefone / WhatsApp</strong><small id="visitPhone"></small></div></div>
+            <div><span>💠</span><div><strong>Chave PIX</strong><small id="visitPix"></small></div></div>
+          </div>
+        </div>
+        <div class="visit-card">
+          <h3>Prefere falar com a gente?</h3>
+          <p class="muted small mt-1">Atendimento humano, do jeito que tem que ser.</p>
+          <a class="btn btn-primary btn-block mt-2" id="whatsBtn" target="_blank" rel="noopener">Falar no WhatsApp</a>
+          <a class="btn btn-ghost btn-block mt-2" href="/acompanhar">Acompanhar meu pedido</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div>
+        <div class="brand">
+          <span class="brand-mark">🍔</span>
+          <span class="brand-text"><strong id="footerName">Brasa Burger</strong><small>Sabor de verdade</small></span>
+        </div>
+        <p class="muted tiny mt-1">Sistema de pedidos gratuito · feito com Node.js + SQLite</p>
+      </div>
+      <div class="footer-links">
+        <a href="#cardapio">Cardápio</a>
+        <a href="/acompanhar">Meu pedido</a>
+        <a href="/cozinha">Cozinha</a>
+        <a href="/admin">Painel da loja</a>
+      </div>
+      <p class="muted tiny">© <span id="year"></span> <span id="footerStore"></span> · Todos os direitos reservados</p>
+    </div>
+  </footer>
+
+  <!-- CARRINHO -->
+  <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+  <aside class="drawer" id="cartDrawer" aria-label="Carrinho">
+    <div class="drawer-head">
+      <div>
+        <h3>Seu pedido</h3>
+        <small class="muted" id="cartSubtitle">Nenhum item ainda</small>
+      </div>
+      <button class="modal-close" id="closeDrawer" aria-label="Fechar">×</button>
+    </div>
+
+    <div class="drawer-type" id="typeTabs">
+      <button class="drawer-type-btn active" data-type="delivery"><span>🛵</span>Entrega</button>
+      <button class="drawer-type-btn" data-type="pickup"><span>🥡</span>Retirada</button>
+      <button class="drawer-type-btn" data-type="dinein"><span>🍽️</span>Mesa</button>
+    </div>
+
+    <div class="drawer-body" id="cartBody"></div>
+
+    <div class="drawer-foot" id="cartFoot" hidden>
+      <div class="coupon-row">
+        <input class="input" id="couponInput" placeholder="Cupom de desconto" autocomplete="off" />
+        <button class="btn btn-sm" id="applyCoupon">Aplicar</button>
+      </div>
+      <div class="totals" id="totals"></div>
+      <button class="btn btn-primary btn-lg btn-block" id="checkoutBtn">Finalizar pedido</button>
+      <p class="tiny muted center mt-1" id="minOrderHint"></p>
+    </div>
+  </aside>
+
+  <!-- barra mobile do carrinho -->
+  <div class="mobile-cart" id="mobileCart" hidden>
+    <button class="btn btn-primary btn-block" id="mobileCartBtn">
+      <span>🛒 <span id="mobileCount">0</span> itens</span>
+      <strong id="mobileTotal">R$ 0,00</strong>
+    </button>
+  </div>
+
+  <script type="module" src="/js/store.js"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cozinha · Sistema Food</title>
+  <meta name="theme-color" content="#0f0d0b" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👨‍🍳</text></svg>" />
+  <link rel="stylesheet" href="/css/app.css" />
+  <link rel="stylesheet" href="/css/admin.css" />
+  <link rel="stylesheet" href="/css/cozinha.css" />
+</head>
+<body class="kds-body">
+
+  <!-- login rápido -->
+  <div class="kds-login hidden" id="kdsLogin">
+    <form class="login-card" id="kdsLoginForm">
+      <div class="row" style="gap:10px">
+        <span class="brand-mark" style="width:44px;height:44px;font-size:22px">👨‍🍳</span>
+        <div><h2 style="font-size:20px">Tela da cozinha</h2><p class="muted small">Entre com sua conta da equipe</p></div>
+      </div>
+      <div class="field mt-2"><label>E-mail</label><input class="input" id="kEmail" type="email" required placeholder="cozinha@sualoja.com" /></div>
+      <div class="field mt-2"><label>Senha</label><input class="input" id="kPass" type="password" required placeholder="••••••••" /></div>
+      <p class="form-error mt-1" id="kError"></p>
+      <button class="btn btn-primary btn-lg btn-block mt-2" type="submit">Entrar</button>
+      <p class="tiny muted mt-2">Demo: cozinha@sistema.food / cozinha123</p>
+    </form>
+  </div>
+
+  <!-- board -->
+  <div id="kdsApp" class="hidden">
+    <header class="kds-top">
+      <div class="row" style="gap:12px">
+        <span class="brand-mark" style="width:40px;height:40px;font-size:20px">👨‍🍳</span>
+        <div>
+          <h1 id="kdsStore">Cozinha</h1>
+          <p class="muted small"><span id="kdsClock">--:--</span> · <span id="kdsQueue">0 pedidos na fila</span></p>
+        </div>
+      </div>
+      <div class="row" style="gap:10px">
+        <span class="live-pill" id="kdsLive"><span class="dot"></span> tempo real</span>
+        <button class="btn btn-sm" id="kdsSound">🔔 Som ligado</button>
+        <button class="btn btn-sm btn-ghost" id="kdsFull">⛶ Tela cheia</button>
+        <a class="btn btn-sm btn-ghost" href="/admin">← Painel</a>
+        <button class="btn btn-sm btn-ghost" id="kdsLogout">Sair</button>
+      </div>
+    </header>
+
+    <div class="kds-board">
+      <section class="kds-col" data-col="new">
+        <header class="kds-col-head"><h2>🔔 Novos</h2><span class="badge badge-pending" id="count-new">0</span></header>
+        <div class="kds-list" id="list-new"></div>
+      </section>
+      <section class="kds-col" data-col="preparing">
+        <header class="kds-col-head"><h2>🔥 Em preparo</h2><span class="badge badge-preparing" id="count-preparing">0</span></header>
+        <div class="kds-list" id="list-preparing"></div>
+      </section>
+      <section class="kds-col" data-col="ready">
+        <header class="kds-col-head"><h2>✅ Prontos</h2><span class="badge badge-ready" id="count-ready">0</span></header>
+        <div class="kds-list" id="list-ready"></div>
+      </section>
+    </div>
+  </div>
+
+  <script type="module" src="/js/cozinha.js"></script>
+</body>
+</html>

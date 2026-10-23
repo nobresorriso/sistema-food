@@ -1,0 +1,18 @@
+{
+  "name": "sistema-food",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sistema de food service com vendas online e no local - 100% gratis, sem dependencias",
+  "type": "module",
+  "engines": {
+    "node": ">=22.5"
+  },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning src/server.mjs",
+    "dev": "node --disable-warning=ExperimentalWarning --watch src/server.mjs",
+    "seed": "node --disable-warning=ExperimentalWarning src/seed.mjs",
+    "reset": "node --disable-warning=ExperimentalWarning src/seed.mjs --reset",
+    "demo": "node --disable-warning=ExperimentalWarning src/seed.mjs --demo",
+    "test": "node --disable-warning=ExperimentalWarning test/api.test.mjs"
+  }
+}

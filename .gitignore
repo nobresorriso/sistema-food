@@ -1,0 +1,8 @@
+node_modules/
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/secret.txt
+.env
+.DS_Store
+*.log

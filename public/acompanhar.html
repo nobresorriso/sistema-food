@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Acompanhar pedido · Sistema Food</title>
+  <meta name="theme-color" content="#0f0d0b" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛵</text></svg>" />
+  <link rel="stylesheet" href="/css/app.css" />
+  <link rel="stylesheet" href="/css/store.css" />
+</head>
+<body class="track-page">
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">
+        <span class="brand-mark">🍔</span>
+        <span class="brand-text"><strong id="brandName">Sistema Food</strong><small>acompanhe seu pedido</small></span>
+      </a>
+      <div class="header-actions" style="margin-left:auto">
+        <a class="btn btn-ghost btn-sm" href="/">← Cardápio</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container track-main">
+    <section class="track-search" id="searchSection">
+      <span class="eyebrow">Pedido</span>
+      <h1>Onde está meu pedido?</h1>
+      <p class="muted mt-1">Digite o código que você recebeu ao finalizar a compra.</p>
+      <form class="track-form mt-2" id="trackForm">
+        <div class="field">
+          <label for="code">Código do pedido</label>
+          <input class="input mono" id="code" name="code" placeholder="SF-XXXXX" maxlength="12" required style="text-transform:uppercase" />
+        </div>
+        <div class="field">
+          <label for="phone">WhatsApp do pedido</label>
+          <input class="input" id="phone" name="phone" inputmode="tel" maxlength="16" placeholder="(69) 99999-0000" />
+        </div>
+        <button class="btn btn-primary btn-lg" type="submit">Buscar pedido</button>
+      </form>
+      <p class="form-error mt-1" id="trackError"></p>
+    </section>
+
+    <section id="orderSection" class="hidden"></section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p class="muted tiny">Sistema Food · pedidos online e no local</p>
+      <div class="footer-links"><a href="/">Cardápio</a><a href="/admin">Painel da loja</a></div>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/acompanhar.js"></script>
+</body>
+</html>
