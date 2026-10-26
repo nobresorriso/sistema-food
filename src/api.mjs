@@ -1,6 +1,9 @@
 // src/api.mjs — API REST do sistema (zero dependências)
 import crypto from 'node:crypto';
-import { db, q, getSettings, setSettings, hashPassword, verifyPassword, DEFAULT_SETTINGS } from './db.mjs';
+import {
+  db, q, getSettings, setSettings, hashPassword, verifyPassword,
+  DEFAULT_SETTINGS, TEXT_KEYS, TEXT_LIMITS, TEXT_LIMIT_DEFAULT,
+} from './db.mjs';
 import {
   HttpError, nowISO, localDayStart, randomCode, clean, ORDER_STATUS,
   STATUS_LABEL, TYPE_LABEL, PAYMENT_LABEL,
@@ -93,7 +96,10 @@ function digits(v) {
 
 function publicSettings() {
   const s = getSettings();
+  const texts = {};
+  for (const key of TEXT_KEYS) texts[key] = s[key] ?? DEFAULT_SETTINGS[key] ?? '';
   return {
+    texts,
     store_name: s.store_name,
     store_tagline: s.store_tagline,
     store_phone: s.store_phone,
@@ -822,6 +828,17 @@ route('PUT', '/api/admin/settings', ({ body }) => {
   if ('open' in patch) patch.open = patch.open ? '1' : '0';
   if ('accept_online_orders' in patch) patch.accept_online_orders = patch.accept_online_orders ? '1' : '0';
 
+  // textos do site: limita tamanho e remove caracteres de controle
+  for (const key of TEXT_KEYS) {
+    if (!(key in patch)) continue;
+    const limit = TEXT_LIMITS[key] || TEXT_LIMIT_DEFAULT;
+    const value = clean(patch[key], limit + 40);
+    if (value.length > limit) {
+      throw new HttpError(400, `O texto "${key}" passou do limite de ${limit} caracteres.`);
+    }
+    patch[key] = value;
+  }
+
   if ('logo' in patch) {
     const logo = String(patch.logo || '').trim();
     // aceita apenas imagem em data URL (png/jpeg/webp), já redimensionada no navegador
@@ -834,6 +851,13 @@ route('PUT', '/api/admin/settings', ({ body }) => {
     patch.logo = logo;
   }
 
+  setSettings(patch);
+  return { settings: getSettings() };
+}, { auth: true, roles: MANAGE });
+
+route('POST', '/api/admin/settings/reset-texts', () => {
+  const patch = {};
+  for (const key of TEXT_KEYS) patch[key] = DEFAULT_SETTINGS[key];
   setSettings(patch);
   return { settings: getSettings() };
 }, { auth: true, roles: MANAGE });

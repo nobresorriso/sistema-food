@@ -54,12 +54,9 @@ function applyStoreInfo() {
   document.title = `${s.store_name} · Peça online`;
   setText('brandName', s.store_name);
   setText('brandTag', s.store_tagline);
-  setText('heroSub', s.store_tagline ? `${s.store_tagline}. Peça online e receba em casa — ou reserve sua mesa.` : null);
   setText('metaTime', `${s.avg_prep_time} min`);
   setText('metaFee', s.delivery_fee ? money(s.delivery_fee) : 'Grátis');
   setText('metaFree', s.free_delivery_above ? `Acima de ${money(s.free_delivery_above)}` : 'Sempre grátis');
-  setText('benefitDelivery', s.free_delivery_above ? `Grátis acima de ${money(s.free_delivery_above)}` : 'Entrega grátis');
-  setText('benefitHours', s.open_hours);
   setText('visitName', s.store_name);
   setText('visitAddress', s.address);
   setText('visitHours', s.open_hours);
@@ -78,7 +75,8 @@ function applyStoreInfo() {
 
   const open = s.open;
   $('#openDot').classList.toggle('closed', !open);
-  $('#openLabel').textContent = open ? 'Aberto agora' : 'Fechado no momento';
+
+  applyTexts(s);
 
   const whats = document.getElementById('whatsBtn');
   if (whats && s.whatsapp) {
@@ -86,6 +84,80 @@ function applyStoreInfo() {
   }
 
   document.querySelectorAll('[data-store-name]').forEach((el) => (el.textContent = s.store_name));
+}
+
+/**
+ * Aplica os textos editáveis do painel em todo o cardápio.
+ * Campos vazios usam o padrão, para a loja nunca ficar com espaço em branco.
+ */
+function applyTexts(s) {
+  const t = s.texts || {};
+  const set = (id, value, fallback = '') => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value || fallback;
+  };
+  const setPlaceholder = (id, value, fallback) => {
+    const el = document.getElementById(id);
+    if (el) el.placeholder = value || fallback;
+  };
+
+  // destaque
+  set('heroTitle', t.hero_title, 'Comida de verdade,');
+  set('heroTitleHighlight', t.hero_title_highlight, 'feita na brasa.');
+  set('heroSub', t.hero_subtitle, s.store_tagline);
+  set('heroCtaPrimary', t.hero_cta_primary, 'Pedir agora');
+  set('heroCtaSecondary', t.hero_cta_secondary, 'Pedir na mesa');
+  set('metaLabel1', t.hero_meta_1, 'Tempo médio');
+  set('metaLabel2', t.hero_meta_2, 'Entrega');
+  set('metaLabel3', t.hero_meta_3, 'Frete grátis');
+  set('metaLabel4', t.hero_meta_4, 'Pagamento');
+
+  // vantagens
+  for (let i = 1; i <= 4; i++) {
+    set(`benefit${i}Icon`, t[`benefit_${i}_icon`]);
+    set(`benefit${i}Title`, t[`benefit_${i}_title`]);
+    set(`benefit${i}Text`, t[`benefit_${i}_text`]);
+  }
+  // valores dinâmicos quando o texto está vazio
+  if (!t.benefit_2_text) {
+    set('benefit2Text', s.free_delivery_above ? `Grátis acima de ${money(s.free_delivery_above)}` : 'Entrega grátis');
+  }
+  if (!t.benefit_4_title) set('benefit4Title', s.open_hours);
+
+  // cardápio
+  set('menuEyebrow', t.menu_eyebrow, 'Cardápio');
+  set('menuTitle', t.menu_title, 'Escolha o que vai hoje');
+  setPlaceholder('searchInput', t.menu_search, 'Buscar no cardápio...');
+
+  // como funciona
+  set('howEyebrow', t.how_eyebrow, 'Simples assim');
+  set('howTitle', t.how_title, 'Três jeitos de pedir');
+  for (let i = 1; i <= 3; i++) {
+    set(`how${i}Title`, t[`how_${i}_title`]);
+    set(`how${i}Text`, t[`how_${i}_text`]);
+    set(`how${i}Link`, t[`how_${i}_link`]);
+  }
+
+  // visita / contato
+  set('visitEyebrow', t.visit_eyebrow, 'Venha nos visitar');
+  set('visitCardTitle', t.visit_card_title, 'Prefere falar com a gente?');
+  set('visitCardText', t.visit_card_text);
+  set('visitWhatsBtn', t.visit_whats_btn, 'Falar no WhatsApp');
+  set('visitTrackBtn', t.visit_track_btn, 'Acompanhar meu pedido');
+  set('visitHoursLabel', t.visit_hours_label, 'Funcionamento');
+  set('visitPhoneLabel', t.visit_phone_label, 'Telefone / WhatsApp');
+  set('visitPixLabel', t.visit_pix_label, 'Chave PIX');
+
+  // rodapé
+  set('footerNote', t.footer_note, 'Sabor de verdade');
+
+  // rótulo de aberto/fechado
+  const openLabel = document.getElementById('openLabel');
+  if (openLabel) {
+    openLabel.textContent = s.open
+      ? t.hero_badge_open || 'Aberto agora'
+      : t.hero_badge_closed || 'Fechado no momento';
+  }
 }
 
 function handleDeepLink() {

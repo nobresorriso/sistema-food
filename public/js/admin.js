@@ -1974,6 +1974,119 @@ async function saveLogo(dataUrl) {
   return settings.logo;
 }
 
+const TEXT_FIELDS = {
+  banner: [
+    ['announcement', 'Faixa do topo', 'Deixe vazio para esconder a faixa laranja'],
+    ['store_tagline', 'Subtítulo da marca', 'Aparece embaixo do nome da loja'],
+  ],
+  hero: [
+    ['hero_badge_open', 'Selo quando aberto', 'Ex: Aberto agora'],
+    ['hero_badge_closed', 'Selo quando fechado', 'Ex: Fechado no momento'],
+    ['hero_title', 'Título — 1ª linha', 'Ex: Comida de verdade,'],
+    ['hero_title_highlight', 'Título — 2ª linha (colorida)', 'Ex: feita na brasa.'],
+    ['hero_subtitle', 'Frase de apoio', '', 'textarea'],
+    ['hero_cta_primary', 'Botão principal', 'Ex: Pedir agora'],
+    ['hero_cta_secondary', 'Botão de mesa', 'Ex: Pedir na mesa'],
+  ],
+  metas: [
+    ['hero_meta_1', 'Rótulo 1', 'Ao lado do tempo médio'],
+    ['hero_meta_2', 'Rótulo 2', 'Ao lado da taxa de entrega'],
+    ['hero_meta_3', 'Rótulo 3', 'Ao lado do frete grátis'],
+    ['hero_meta_4', 'Rótulo 4', 'Ao lado do PIX'],
+  ],
+  benefits: [
+    ['benefit_1_icon', 'Ícone 1', 'Um emoji'],
+    ['benefit_1_title', 'Título 1'],
+    ['benefit_1_text', 'Texto 1'],
+    ['benefit_2_icon', 'Ícone 2', 'Um emoji'],
+    ['benefit_2_title', 'Título 2'],
+    ['benefit_2_text', 'Texto 2', 'Vazio = mostra o frete grátis calculado'],
+    ['benefit_3_icon', 'Ícone 3', 'Um emoji'],
+    ['benefit_3_title', 'Título 3'],
+    ['benefit_3_text', 'Texto 3'],
+    ['benefit_4_icon', 'Ícone 4', 'Um emoji'],
+    ['benefit_4_title', 'Título 4', 'Vazio = mostra o horário de funcionamento'],
+    ['benefit_4_text', 'Texto 4'],
+  ],
+  menu: [
+    ['menu_eyebrow', 'Rótulo acima do título', 'Ex: Cardápio'],
+    ['menu_title', 'Título da seção', 'Ex: Escolha o que vai hoje'],
+    ['menu_search', 'Texto do campo de busca', 'Ex: Buscar no cardápio...'],
+  ],
+  how: [
+    ['how_eyebrow', 'Rótulo acima do título', 'Ex: Simples assim'],
+    ['how_title', 'Título da seção', 'Ex: Três jeitos de pedir'],
+    ['how_1_title', 'Card 1 — título'],
+    ['how_1_text', 'Card 1 — texto', '', 'textarea'],
+    ['how_1_link', 'Card 1 — link'],
+    ['how_2_title', 'Card 2 — título'],
+    ['how_2_text', 'Card 2 — texto', '', 'textarea'],
+    ['how_2_link', 'Card 2 — link'],
+    ['how_3_title', 'Card 3 — título'],
+    ['how_3_text', 'Card 3 — texto', '', 'textarea'],
+    ['how_3_link', 'Card 3 — link'],
+  ],
+  visit: [
+    ['visit_eyebrow', 'Rótulo da seção', 'Ex: Venha nos visitar'],
+    ['visit_card_title', 'Título do cartão de contato'],
+    ['visit_card_text', 'Texto do cartão de contato'],
+    ['visit_whats_btn', 'Botão do WhatsApp'],
+    ['visit_track_btn', 'Botão de acompanhar pedido'],
+    ['visit_hours_label', 'Rótulo do horário'],
+    ['visit_phone_label', 'Rótulo do telefone'],
+    ['visit_pix_label', 'Rótulo da chave PIX'],
+  ],
+  footer: [
+    ['footer_note', 'Frase do rodapé', 'Abaixo do nome da loja'],
+  ],
+};
+
+function textFields(group, current, canEdit) {
+  return TEXT_FIELDS[group]
+    .map(([key, label, hint, type]) => {
+      const value = current[key] ?? '';
+      const control = type === 'textarea'
+        ? `<textarea class="textarea" id="s_${key}" rows="2" maxlength="240" ${canEdit ? '' : 'disabled'}>${esc(value)}</textarea>`
+        : `<input class="input" id="s_${key}" value="${esc(value)}" maxlength="160" ${canEdit ? '' : 'disabled'} />`;
+      return `<div class="field">
+        <label for="s_${key}">${label}</label>
+        ${control}
+        ${hint ? `<small class="tiny muted">${hint}</small>` : ''}
+      </div>`;
+    })
+    .join('');
+}
+
+function textsCard(settings, canEdit) {
+  const groups = [
+    ['banner', '🏷️ Faixa e marca', false],
+    ['hero', '🌅 Destaque principal', true],
+    ['metas', '📊 Indicadores do destaque', false],
+    ['benefits', '✨ Vantagens', false],
+    ['menu', '🍽️ Seção do cardápio', false],
+    ['how', '🚀 Como funciona', false],
+    ['visit', '📍 Visita e contato', true],
+    ['footer', '🔻 Rodapé', false],
+  ];
+  return `<div class="card form-section texts-card" id="textsCard">
+    <div class="between">
+      <div>
+        <h3>✍️ Textos do site</h3>
+        <p class="tiny muted">Edite cada frase do cardápio. Deixe vazio para usar o texto padrão.</p>
+      </div>
+      ${canEdit ? '<button class="btn btn-sm" id="resetTexts" title="Volta todos os textos ao padrão">↺ Restaurar padrão</button>' : ''}
+    </div>
+    ${groups
+      .map(
+        ([group, title, open]) => `<details class="text-group" ${open ? 'open' : ''}>
+          <summary>${title}</summary>
+          <div class="text-group-body">${textFields(group, settings, canEdit)}</div>
+        </details>`
+      )
+      .join('')}
+  </div>`;
+}
+
 async function renderSettings() {
   const { settings } = await api('/api/admin/settings', { auth: true });
   state.settings = settings;
@@ -2040,6 +2153,8 @@ async function renderSettings() {
           <div class="ctl"><label class="switch"><input type="checkbox" id="s_open" ${settings.open === '1' ? 'checked' : ''} ${canEdit ? '' : 'disabled'} /><span></span></label></div>
         </div>
       </div>
+
+      ${textsCard(settings, canEdit)}
 
       <div class="card form-section">
         <h3>💠 PIX</h3>
@@ -2121,12 +2236,33 @@ async function renderSettings() {
       accept_online_orders: $('#s_accept_online_orders').checked,
       open: $('#s_open').checked,
     };
+    // textos do site (só os campos presentes na tela)
+    for (const group of Object.keys(TEXT_FIELDS)) {
+      for (const [key] of TEXT_FIELDS[group]) {
+        const input = document.getElementById(`s_${key}`);
+        if (input) body[key] = input.value;
+      }
+    }
     try {
       const res = await api('/api/admin/settings', { method: 'PUT', auth: true, body });
       state.settings = res.settings;
       $('#sideStoreName').textContent = res.settings.store_name;
       paintStoreState();
       toast('Configurações salvas!', 'success');
+      renderSettings();
+    } catch (err) { toast(err.message, 'error'); }
+  });
+
+  $('#resetTexts')?.addEventListener('click', async () => {
+    const ok = await confirmDialog({
+      title: 'Restaurar textos',
+      message: 'Todos os textos do site voltam ao padrão original. Suas outras configurações não mudam.',
+      confirmText: 'Restaurar',
+    });
+    if (!ok) return;
+    try {
+      await api('/api/admin/settings/reset-texts', { method: 'POST', auth: true });
+      toast('Textos restaurados.', 'success');
       renderSettings();
     } catch (err) { toast(err.message, 'error'); }
   });

@@ -211,6 +211,81 @@ r = await req('/api/admin/orders', { method:'POST', token, body:{ type:'pos', cu
 ok(r.status === 201, 'PDV continua vendendo com loja fechada');
 await req('/api/admin/settings', { method:'PUT', token, body:{ open:true }});
 
+console.log('\n== Textos do site ==');
+{
+  let resp = await req('/api/store');
+  const t = resp.data.store.texts || {};
+  ok(typeof t.hero_title === 'string' && t.hero_title.length > 0, 'textos padrão expostos no /api/store');
+  ok(t.hero_cta_primary === 'Pedir agora', 'botão principal padrão: ' + t.hero_cta_primary);
+  const keys = Object.keys(t);
+  ok(keys.length >= 40, `quantidade de textos editáveis: ${keys.length}`);
+
+  // edição
+  resp = await req('/api/admin/settings', {
+    method: 'PUT', token,
+    body: {
+      hero_title: 'Grelhados na brasa,',
+      hero_title_highlight: 'direto pra você.',
+      hero_cta_primary: 'Quero pedir',
+      menu_title: 'O que vai hoje?',
+      how_1_title: '🛵 Delivery próprio',
+      benefit_1_title: 'Feito no fogo',
+      footer_note: 'Desde 2019',
+      announcement: 'Frete grátis acima de R$ 80',
+    },
+  });
+  ok(resp.status === 200, 'salva textos pelo painel');
+  resp = await req('/api/store');
+  const t2 = resp.data.store.texts;
+  ok(t2.hero_title === 'Grelhados na brasa,' && t2.hero_title_highlight === 'direto pra você.', 'título salvo');
+  ok(t2.hero_cta_primary === 'Quero pedir', 'botão salvo');
+  ok(t2.menu_title === 'O que vai hoje?', 'título do cardápio salvo');
+  ok(t2.how_1_title === '🛵 Delivery próprio', 'card do "como funciona" salvo');
+  ok(t2.footer_note === 'Desde 2019', 'rodapé salvo');
+
+  // textos não sobrescrevem configurações de operação
+  resp = await req('/api/admin/settings', { token });
+  ok(resp.data.settings.delivery_fee === '500', 'taxa de entrega intacta');
+
+  // limite de tamanho
+  resp = await req('/api/admin/settings', {
+    method: 'PUT', token, body: { hero_title: 'x'.repeat(200) },
+  });
+  ok(resp.status === 400, 'rejeita texto acima do limite');
+  resp = await req('/api/store');
+  ok(resp.data.store.texts.hero_title === 'Grelhados na brasa,', 'texto anterior preservado após erro');
+
+  // texto vazio é permitido (volta ao padrão na tela)
+  resp = await req('/api/admin/settings', { method: 'PUT', token, body: { hero_subtitle: '' } });
+  ok(resp.status === 200 && resp.data.settings.hero_subtitle === '', 'permite limpar um texto');
+
+  // caracteres de controle são removidos
+  resp = await req('/api/admin/settings', { method: 'PUT', token, body: { hero_title: 'Linha\u0000com\u0007controle' } });
+  ok(!/[\u0000-\u001f]/.test(resp.data.settings.hero_title), 'remove caracteres de controle');
+
+  // script na configuração é salvo como texto puro (a tela escapa na exibição)
+  resp = await req('/api/admin/settings', { method: 'PUT', token, body: { hero_title: '<script>alert(1)</script>' } });
+  ok(resp.status === 200, 'aceita texto com tags (renderizado como texto, não HTML)');
+
+  // permissões
+  const relogin2 = async (email, pass) =>
+    (await req('/api/auth/login', { method: 'POST', body: { email, password: pass } })).data.token;
+  const cash2 = await relogin2('caixa@sistema.food', 'caixa123');
+  resp = await req('/api/admin/settings', { method: 'PUT', token: cash2, body: { hero_title: 'hack' } });
+  ok(resp.status === 403, 'caixa não edita textos');
+  resp = await req('/api/admin/settings/reset-texts', { method: 'POST', token: cash2 });
+  ok(resp.status === 403, 'caixa não restaura textos');
+
+  // restaurar padrões
+  resp = await req('/api/admin/settings/reset-texts', { method: 'POST', token });
+  ok(resp.status === 200, 'restaura textos padrão');
+  const restored = (await req('/api/store')).data.store.texts;
+  ok(restored.hero_title === 'Comida de verdade,', 'título padrão restaurado');
+  ok(restored.hero_cta_primary === 'Pedir agora', 'botão padrão restaurado');
+  resp = await req('/api/admin/settings', { token });
+  ok(resp.data.settings.store_name.length > 0, 'restaurar textos não apaga o nome da loja');
+}
+
 console.log('\n== Logo da loja ==');
 {
   // PNG 1x1 válido em data URL (só para exercitar o fluxo)

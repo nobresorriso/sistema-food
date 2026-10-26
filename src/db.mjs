@@ -188,7 +188,68 @@ export const DEFAULT_SETTINGS = {
   accept_online_orders: '1',
   service_fee_pct: '0',
   logo: '', // imagem em data URL (redimensionada no navegador antes de salvar)
+
+  // ---------- textos do site (todos editáveis no painel) ----------
+  hero_badge_open: 'Aberto agora',
+  hero_badge_closed: 'Fechado no momento',
+  hero_title: 'Comida de verdade,',
+  hero_title_highlight: 'feita na brasa.',
+  hero_subtitle: 'Hambúrgueres artesanais, pizzas de fermentação natural e porções generosas. Peça online e receba em casa — ou reserve sua mesa.',
+  hero_cta_primary: 'Pedir agora',
+  hero_cta_secondary: 'Pedir na mesa',
+  hero_meta_1: 'Tempo médio',
+  hero_meta_2: 'Entrega',
+  hero_meta_3: 'Frete grátis',
+  hero_meta_4: 'Pagamento',
+
+  benefit_1_icon: '🔥',
+  benefit_1_title: 'Feito na hora',
+  benefit_1_text: 'Nada de comida parada',
+  benefit_2_icon: '🛵',
+  benefit_2_title: 'Entrega rápida',
+  benefit_2_text: '', // vazio = calculado pela taxa de entrega
+  benefit_3_icon: '💠',
+  benefit_3_title: 'PIX na hora',
+  benefit_3_text: 'Aprovação imediata',
+  benefit_4_icon: '🕒',
+  benefit_4_title: '', // vazio = usa o horário de funcionamento
+  benefit_4_text: 'Horário de funcionamento',
+
+  menu_eyebrow: 'Cardápio',
+  menu_title: 'Escolha o que vai hoje',
+  menu_search: 'Buscar no cardápio...',
+
+  how_eyebrow: 'Simples assim',
+  how_title: 'Três jeitos de pedir',
+  how_1_title: '🛵 Entrega',
+  how_1_text: 'Monte seu pedido, pague no PIX ou na entrega e acompanhe o status em tempo real.',
+  how_1_link: 'Pedir delivery →',
+  how_2_title: '🥡 Retirada',
+  how_2_text: 'Peça pelo site e retire no balcão sem fila. Avisamos quando estiver pronto.',
+  how_2_link: 'Pedir retirada →',
+  how_3_title: '🍽️ Na mesa',
+  how_3_text: 'Escaneie o QR code da mesa ou peça por aqui: escolha a mesa e envie direto para a cozinha.',
+  how_3_link: 'Pedir na mesa →',
+
+  visit_eyebrow: 'Venha nos visitar',
+  visit_card_title: 'Prefere falar com a gente?',
+  visit_card_text: 'Atendimento humano, do jeito que tem que ser.',
+  visit_whats_btn: 'Falar no WhatsApp',
+  visit_track_btn: 'Acompanhar meu pedido',
+  visit_hours_label: 'Funcionamento',
+  visit_phone_label: 'Telefone / WhatsApp',
+  visit_pix_label: 'Chave PIX',
+  footer_note: 'Sabor de verdade',
 };
+
+/** Chaves de texto livre (usadas na validação e no botão de restaurar padrões) */
+export const TEXT_KEYS = Object.keys(DEFAULT_SETTINGS).filter((k) =>
+  /^(hero_|benefit_|menu_|how_|visit_|footer_|store_tagline|announcement)/.test(k)
+);
+
+/** Limite de caracteres por campo de texto */
+export const TEXT_LIMITS = { announcement: 120, hero_title: 60, hero_title_highlight: 60, hero_subtitle: 240, menu_title: 60, how_title: 60 };
+export const TEXT_LIMIT_DEFAULT = 160;
 
 function seedSettings() {
   const set = db.prepare('INSERT OR IGNORE INTO settings(key, value) VALUES (?, ?)');

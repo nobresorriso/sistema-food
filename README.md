@@ -50,6 +50,8 @@ Para usar outra porta: `PORT=8080 npm start`.
 ## ✨ O que o sistema faz
 
 ### Identidade da marca
+- **Todos os textos do site editáveis** no painel (48 campos): destaque, botões, vantagens,
+  títulos das seções, cards de "como funciona", contato e rodapé — com botão de restaurar padrão
 - Upload da **logo** direto nas configurações (PNG, JPG ou WEBP)
 - A imagem é redimensionada no navegador antes de salvar — não pesa no banco
 - Aparece no cardápio, no rodapé, no painel, na tela da cozinha e no favicon da aba
