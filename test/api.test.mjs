@@ -211,6 +211,53 @@ r = await req('/api/admin/orders', { method:'POST', token, body:{ type:'pos', cu
 ok(r.status === 201, 'PDV continua vendendo com loja fechada');
 await req('/api/admin/settings', { method:'PUT', token, body:{ open:true }});
 
+console.log('\n== Logo da loja ==');
+{
+  // PNG 1x1 válido em data URL (só para exercitar o fluxo)
+  const png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+
+  let resp = await req('/api/admin/settings', { method: 'PUT', token, body: { logo: png } });
+  ok(resp.status === 200 && resp.data.settings.logo === png, 'salva logo (data URL PNG)');
+
+  resp = await req('/api/store');
+  ok(resp.data.store.logo === png, 'logo aparece nas configurações públicas da loja');
+  resp = await req('/api/menu');
+  ok(resp.data.store.logo === png, 'logo aparece no cardápio público');
+
+  // rejeições
+  resp = await req('/api/admin/settings', { method: 'PUT', token, body: { logo: 'javascript:alert(1)' } });
+  ok(resp.status === 400, 'rejeita logo que não é imagem');
+  resp = await req('/api/admin/settings', { method: 'PUT', token, body: { logo: 'data:text/html;base64,PHNjcmlwdD4=' } });
+  ok(resp.status === 400, 'rejeita data URL que não é png/jpeg/webp');
+  resp = await req('/api/admin/settings', { method: 'PUT', token, body: { logo: `data:image/png;base64,${'A'.repeat(410000)}` } });
+  ok(resp.status === 400, 'rejeita logo acima do limite de tamanho');
+
+  // continua salva depois de uma tentativa inválida
+  resp = await req('/api/store');
+  ok(resp.data.store.logo === png, 'logo anterior preservada após erro');
+
+  // salvar outras configurações não apaga a logo
+  resp = await req('/api/admin/settings', { method: 'PUT', token, body: { avg_prep_time: 40 } });
+  ok(resp.data.settings.logo === png, 'salvar outras configurações mantém a logo');
+
+  // só admin/gerente alteram a logo (novo login: o usuário de teste do caixa foi removido acima)
+  const relogin = async (email, pass) =>
+    (await req('/api/auth/login', { method: 'POST', body: { email, password: pass } })).data.token;
+  const cash = await relogin('caixa@sistema.food', 'caixa123');
+  const kitchen = await relogin('cozinha@sistema.food', 'cozinha123');
+  resp = await req('/api/admin/settings', { method: 'PUT', token: cash, body: { logo: png } });
+  ok(resp.status === 403, 'caixa não altera a logo');
+  resp = await req('/api/admin/settings', { method: 'PUT', token: kitchen, body: { logo: png } });
+  ok(resp.status === 403, 'cozinha não altera a logo');
+
+  // remoção
+  resp = await req('/api/admin/settings', { method: 'PUT', token, body: { logo: '' } });
+  ok(resp.status === 200 && resp.data.settings.logo === '', 'remove a logo');
+  resp = await req('/api/store');
+  ok(resp.data.store.logo === '', 'loja volta ao ícone padrão');
+  await req('/api/admin/settings', { method: 'PUT', token, body: { avg_prep_time: 35 } });
+}
+
 console.log('\n== Cancelamento ==');
 r = await req(`/api/admin/orders/${posOrder.id}/cancel`, { method:'POST', token, body:{ reason:'teste' }});
 ok(r.data.order.status === 'cancelled', 'pedido cancelado');

@@ -1,7 +1,7 @@
 // public/js/admin.js — painel da loja
 import {
   $, $$, api, auth, money, esc, toast, openModal, closeModal, confirmDialog,
-  fmtDateTime, timeAgo, maskPhone, onlyDigits, statusBadge, typeBadge,
+  fmtDateTime, timeAgo, maskPhone, onlyDigits, statusBadge, typeBadge, applyLogo, imageToDataUrl,
   STATUS_LABEL, TYPE_LABEL, TYPE_ICON, PAYMENT_LABEL, whatsappLink,
 } from './api.js';
 
@@ -198,6 +198,7 @@ async function loadSettings() {
     $('#sideStoreName').textContent = settings.store_name;
     $('#loginStoreName').textContent = settings.store_name;
     document.title = `${settings.store_name} · Painel`;
+    applyLogo(settings.logo);
     paintStoreState();
   } catch { /* ignore */ }
 }
@@ -1957,6 +1958,22 @@ function userForm(user = null) {
 }
 
 // ================================================================ CONFIGURAÇÕES
+async function saveLogo(dataUrl) {
+  const { settings } = await api('/api/admin/settings', {
+    method: 'PUT', auth: true, body: { logo: dataUrl },
+  });
+  state.settings = { ...state.settings, logo: settings.logo };
+  applyLogo(settings.logo);
+  // atualiza a prévia sem recarregar a página inteira
+  const preview = document.getElementById('logoPreview');
+  if (preview) {
+    preview.classList.toggle('has-image', Boolean(settings.logo));
+    preview.innerHTML = settings.logo ? `<img src="${settings.logo}" alt="Logo da loja" />` : '<span>🍔</span>';
+  }
+  document.getElementById('logoRemove')?.classList.toggle('hidden', !settings.logo);
+  return settings.logo;
+}
+
 async function renderSettings() {
   const { settings } = await api('/api/admin/settings', { auth: true });
   state.settings = settings;
@@ -1977,6 +1994,26 @@ async function renderSettings() {
 
   $('#view').innerHTML = `
     <div class="grid-2col">
+      <div class="card form-section">
+        <h3>🖼️ Identidade visual</h3>
+        <div class="logo-editor">
+          <div class="logo-preview ${settings.logo ? 'has-image' : ''}" id="logoPreview">
+            ${settings.logo ? `<img src="${settings.logo}" alt="Logo da loja" />` : '<span>🍔</span>'}
+          </div>
+          <div class="logo-info">
+            <strong>Logo da loja</strong>
+            <p class="tiny muted">Aparece no cardápio, no painel, na tela da cozinha e na aba do navegador.
+            PNG, JPG ou WEBP · quadrada fica melhor · a imagem é otimizada automaticamente.</p>
+            <div class="row wrap mt-2">
+              <input type="file" id="logoInput" accept="image/png,image/jpeg,image/webp" hidden ${canEdit ? '' : 'disabled'} />
+              <button class="btn btn-sm btn-primary" id="logoPick" ${canEdit ? '' : 'disabled'}>Escolher imagem</button>
+              <button class="btn btn-sm btn-danger ${settings.logo ? '' : 'hidden'}" id="logoRemove" ${canEdit ? '' : 'disabled'}>Remover</button>
+              <span class="tiny muted" id="logoStatus"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="card form-section">
         <h3>🏪 Dados da loja</h3>
         ${text('store_name', 'Nome da loja')}
@@ -2032,6 +2069,39 @@ async function renderSettings() {
     ${canEdit ? `<div class="row" style="position:sticky;bottom:14px;justify-content:flex-end">
       <button class="btn btn-primary btn-lg" id="saveSettings">💾 Salvar configurações</button>
     </div>` : ''}`;
+
+  const logoInput = $('#logoInput');
+  $('#logoPick')?.addEventListener('click', () => logoInput?.click());
+  logoInput?.addEventListener('change', async () => {
+    const file = logoInput.files?.[0];
+    if (!file) return;
+    const status = $('#logoStatus');
+    status.innerHTML = '<span class="spinner"></span> Otimizando...';
+    try {
+      const dataUrl = await imageToDataUrl(file, { maxSize: 400, quality: 0.9 });
+      await saveLogo(dataUrl);
+      status.textContent = 'Logo atualizada ✓';
+    } catch (err) {
+      status.textContent = '';
+      toast(err.message, 'error');
+    } finally {
+      logoInput.value = '';
+    }
+  });
+
+  $('#logoRemove')?.addEventListener('click', async () => {
+    const ok = await confirmDialog({
+      title: 'Remover logo',
+      message: 'A loja volta a usar o ícone padrão. Deseja continuar?',
+      confirmText: 'Remover',
+      danger: true,
+    });
+    if (!ok) return;
+    try {
+      await saveLogo('');
+      toast('Logo removida.', 'success');
+    } catch (err) { toast(err.message, 'error'); }
+  });
 
   $('#saveSettings')?.addEventListener('click', async () => {
     const body = {

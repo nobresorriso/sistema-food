@@ -1,6 +1,6 @@
 // public/js/cozinha.js — Kitchen Display System
 import {
-  $, $$, api, auth, esc, toast, timeAgo, TYPE_ICON, TYPE_LABEL,
+  $, $$, api, auth, esc, toast, timeAgo, applyLogo, TYPE_ICON, TYPE_LABEL,
 } from './api.js';
 
 const state = { orders: [], timer: null, es: null, sound: true, clock: null, audioCtx: null };
@@ -74,6 +74,7 @@ function start() {
   api('/api/store').then(({ store }) => {
     $('#kdsStore').textContent = `Cozinha · ${store.store_name}`;
     document.title = `Cozinha · ${store.store_name}`;
+    applyLogo(store.logo);
   }).catch(() => {});
   load();
   state.timer = setInterval(load, 10000);

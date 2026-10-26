@@ -108,6 +108,7 @@ function publicSettings() {
     announcement: s.announcement,
     pix_key: s.pix_key,
     pix_holder: s.pix_holder,
+    logo: s.logo || '',
   };
 }
 
@@ -820,6 +821,19 @@ route('PUT', '/api/admin/settings', ({ body }) => {
   }
   if ('open' in patch) patch.open = patch.open ? '1' : '0';
   if ('accept_online_orders' in patch) patch.accept_online_orders = patch.accept_online_orders ? '1' : '0';
+
+  if ('logo' in patch) {
+    const logo = String(patch.logo || '').trim();
+    // aceita apenas imagem em data URL (png/jpeg/webp), já redimensionada no navegador
+    if (logo && !/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(logo)) {
+      throw new HttpError(400, 'Formato de logo inválido. Envie uma imagem PNG, JPG ou WEBP.');
+    }
+    if (logo.length > 400_000) {
+      throw new HttpError(400, 'Logo muito grande. Use uma imagem menor que 300 KB.');
+    }
+    patch.logo = logo;
+  }
+
   setSettings(patch);
   return { settings: getSettings() };
 }, { auth: true, roles: MANAGE });

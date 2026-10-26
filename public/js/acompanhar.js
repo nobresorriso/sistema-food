@@ -1,7 +1,7 @@
 // public/js/acompanhar.js
 import {
   $, api, money, esc, toast, fmtDateTime, maskPhone, onlyDigits, whatsappLink,
-  STATUS_LABEL, TYPE_LABEL, TYPE_ICON, PAYMENT_LABEL,
+  applyLogo, STATUS_LABEL, TYPE_LABEL, TYPE_ICON, PAYMENT_LABEL,
 } from './api.js';
 
 const params = new URLSearchParams(location.search);
@@ -62,6 +62,7 @@ async function init() {
     const { store } = await api('/api/store');
     document.getElementById('brandName').textContent = store.store_name;
     document.title = `Meu pedido · ${store.store_name}`;
+    applyLogo(store.logo);
     state.store = store;
   } catch { /* segue */ }
 

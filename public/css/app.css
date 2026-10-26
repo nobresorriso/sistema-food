@@ -238,3 +238,18 @@ table.tbl tbody tr:hover { background: rgba(255, 255, 255, .025); }
   outline-offset: 2px;
   border-radius: 8px;
 }
+
+/* ===== logo da loja ===== */
+.brand-mark.has-logo {
+  background: #fff;
+  border-color: var(--line-strong);
+  overflow: hidden;
+  padding: 3px;
+}
+.brand-mark.has-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  display: block;
+}

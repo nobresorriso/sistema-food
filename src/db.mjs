@@ -187,6 +187,7 @@ export const DEFAULT_SETTINGS = {
   announcement: 'Entrega grátis acima de R$ 80,00 🛵',
   accept_online_orders: '1',
   service_fee_pct: '0',
+  logo: '', // imagem em data URL (redimensionada no navegador antes de salvar)
 };
 
 function seedSettings() {

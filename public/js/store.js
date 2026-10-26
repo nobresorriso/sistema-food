@@ -1,7 +1,7 @@
 // public/js/store.js — cardápio online, carrinho e checkout
 import {
   $, $$, api, auth, money, esc, toast, openModal, closeModal, maskPhone,
-  whatsappLink, onlyDigits, TYPE_LABEL,
+  whatsappLink, onlyDigits, applyLogo, TYPE_LABEL,
 } from './api.js';
 
 const state = {
@@ -73,6 +73,8 @@ function applyStoreInfo() {
     a.textContent = s.announcement;
     a.hidden = false;
   }
+
+  applyLogo(s.logo);
 
   const open = s.open;
   $('#openDot').classList.toggle('closed', !open);

@@ -49,6 +49,12 @@ Para usar outra porta: `PORT=8080 npm start`.
 
 ## ✨ O que o sistema faz
 
+### Identidade da marca
+- Upload da **logo** direto nas configurações (PNG, JPG ou WEBP)
+- A imagem é redimensionada no navegador antes de salvar — não pesa no banco
+- Aparece no cardápio, no rodapé, no painel, na tela da cozinha e no favicon da aba
+- Um clique para remover e voltar ao ícone padrão
+
 ### Para o cliente (online)
 - Cardápio com categorias, busca, preço promocional e tempo de preparo
 - Carrinho que **não perde os itens** se a página for recarregada
@@ -68,7 +74,7 @@ Para usar outra porta: `PORT=8080 npm start`.
 - **Cupons**: percentual ou valor fixo, mínimo de pedido, limite de usos e validade
 - **Relatórios**: faturamento por dia, por tipo de venda, por forma de pagamento e ranking de produtos
 - **Equipe**: quatro níveis de permissão (admin, gerente, caixa, cozinha)
-- **Configurações**: nome, endereço, WhatsApp, taxas, horário, chave PIX e abrir/fechar a loja
+- **Configurações**: nome, **logo da loja**, endereço, WhatsApp, taxas, horário, chave PIX e abrir/fechar a loja
 
 ### Para a cozinha
 - Tela própria (KDS) com três colunas: **Novos → Em preparo → Prontos**
