@@ -118,12 +118,21 @@ const server = http.createServer(async (req, res) => {
       }
       res.setHeader('Access-Control-Allow-Origin', '*');
       const out = await handleApi(req, res, url);
-      if (!res.writableEnded && out) sendJson(res, out.status, out.body);
+      if (out && !res.writableEnded && !res.headersSent) {
+        sendJson(res, out.status, out.body);
+      }
     } catch (err) {
       const status = err instanceof HttpError ? err.status : 500;
       if (status >= 500) console.error('[erro]', err);
-      if (!res.writableEnded) {
-        sendJson(res, status, { error: err.message || 'Erro interno do servidor.' });
+      // nunca tentar escrever de novo se os headers já foram enviados
+      if (!res.headersSent) {
+        try {
+          sendJson(res, status, { error: err.message || 'Erro interno do servidor.' });
+        } catch (inner) {
+          console.error('[erro ao responder]', inner);
+        }
+      } else if (!res.writableEnded) {
+        try { res.end(); } catch { /* conexão já encerrada */ }
       }
     }
     if (url.pathname !== '/api/admin/events') {
@@ -153,6 +162,15 @@ server.listen(PORT, HOST, () => {
   console.log('                   caixa@sistema.food / caixa123');
   console.log(`  Banco de dados  :  ${path.relative(ROOT, DB_FILE)}`);
   console.log(`${line}\n`);
+});
+
+// Um erro isolado (ex.: cliente desconectou no meio) não deve derrubar o servidor
+process.on('uncaughtException', (err) => {
+  console.error('[erro não tratado]', err?.message || err);
+});
+
+process.on('unhandledRejection', (err) => {
+  console.error('[promise rejeitada]', err?.message || err);
 });
 
 process.on('SIGINT', () => {

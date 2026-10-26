@@ -219,6 +219,39 @@ ok(r.status === 400, 'cancelado não volta atrás');
 r = await req('/api/admin/stats', { token });
 ok(!r.data.series[r.data.series.length-1] || typeof r.data.series[0].revenue === 'number', 'stats ignora cancelados');
 
+console.log('\n== Tempo real (SSE) ==');
+{
+  // regressão: o endpoint SSE envia headers sozinho; no passado isso fazia o
+  // servidor tentar enviar JSON depois e derrubar o processo (ERR_HTTP_HEADERS_SENT)
+  const res = await fetch(`${BASE}/api/admin/events?token=${token}`);
+  ok(res.ok, 'SSE autenticado responde 200');
+  ok((res.headers.get('content-type') || '').includes('text/event-stream'), 'content-type event-stream');
+
+  const reader = res.body.getReader();
+  const { value } = await reader.read();
+  const firstChunk = new TextDecoder().decode(value || new Uint8Array());
+  ok(firstChunk.includes('retry:') || firstChunk.includes('event:'), 'primeiro evento recebido');
+  await reader.cancel(); // cliente desconecta no meio
+
+  const still = await req('/api/store');
+  ok(still.status === 200, 'servidor continua no ar após desconexão do SSE');
+
+  // várias conexões simultâneas (painel + cozinha + dashboards)
+  const controllers = Array.from({ length: 4 }, () => new AbortController());
+  const streams = await Promise.all(
+    controllers.map((c) =>
+      fetch(`${BASE}/api/admin/events?token=${token}`, { signal: c.signal })
+        .then((r) => r.ok)
+        .catch(() => false)
+    )
+  );
+  ok(streams.every(Boolean), '4 conexões SSE simultâneas aceitas');
+  controllers.forEach((c) => c.abort());
+
+  const after = await req('/api/menu');
+  ok(after.status === 200, 'servidor estável com múltiplos SSE abertos e fechados');
+}
+
 console.log('\n== Páginas estáticas ==');
 for (const p of ['/', '/admin', '/cozinha', '/acompanhar', '/cardapio', '/css/app.css', '/js/admin.js', '/img/hero.jpg']) {
   const res = await fetch(BASE + p);

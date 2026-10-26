@@ -1,6 +1,6 @@
 {
   "name": "sistema-food",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Sistema de food service com vendas online e no local - 100% gratis, sem dependencias",
   "type": "module",

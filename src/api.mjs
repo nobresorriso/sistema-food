@@ -928,7 +928,8 @@ export async function handleApi(req, res, url) {
     params: matched.params,
   };
   const result = await matched.handler(ctx);
-  if (res.writableEnded) return undefined;
+  // rotas que já responderam por conta própria (ex.: SSE) não recebem JSON
+  if (res.writableEnded || res.headersSent) return undefined;
   return { status: matched.status || 200, body: result === undefined ? { ok: true } : result };
 }
 
