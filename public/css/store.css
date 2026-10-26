@@ -361,3 +361,10 @@
   .track-form { grid-template-columns: 1fr; }
   .track-search { padding: 22px; }
 }
+
+.footer-links .download-link {
+  color: var(--brand-2); font-weight: 700;
+  border: 1px solid rgba(255, 176, 58, .3); border-radius: 8px;
+  padding: 3px 10px; background: rgba(255, 176, 58, .08);
+}
+.footer-links .download-link:hover { background: rgba(255, 176, 58, .16); color: #ffc86b; }

@@ -6,3 +6,4 @@ data/secret.txt
 .env
 .DS_Store
 *.log
+public/downloads/*.zip

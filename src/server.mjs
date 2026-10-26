@@ -29,6 +29,7 @@ const MIME = {
   '.woff2': 'font/woff2',
   '.txt': 'text/plain; charset=utf-8',
   '.webmanifest': 'application/manifest+json',
+  '.zip': 'application/zip',
 };
 
 const PAGES = {
@@ -76,13 +77,19 @@ function serveStatic(req, res, pathname) {
     }
     const ext = path.extname(file).toLowerCase();
     const isAsset = ['.jpg', '.jpeg', '.png', '.webp', '.svg', '.ico', '.woff2'].includes(ext);
-    res.writeHead(200, {
+    const headers = {
       'Content-Type': MIME[ext] || 'application/octet-stream',
       'Content-Length': stat.size,
       // código sempre fresco durante os testes; imagens podem ficar em cache
       'Cache-Control': isAsset ? 'public, max-age=86400' : 'no-cache',
       'X-Content-Type-Options': 'nosniff',
-    });
+    };
+    // downloads (zip) sempre como anexo, com o nome do arquivo
+    if (ext === '.zip') {
+      headers['Content-Disposition'] = `attachment; filename="${path.basename(file)}"`;
+      headers['Cache-Control'] = 'no-cache';
+    }
+    res.writeHead(200, headers);
     if (req.method === 'HEAD') return res.end();
     fs.createReadStream(file).pipe(res);
   });
